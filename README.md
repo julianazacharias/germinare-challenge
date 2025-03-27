@@ -1,6 +1,6 @@
 # Germinare Challenge
 
-A simple API buildt for Germinare Challenge
+A simple API built for Germinare Challenge
 
 ## How to run the project
 
@@ -41,12 +41,12 @@ task test
 
 5. All "task" commands:
 
-lint = 'ruff check .; ruff check . --diff'
-format = 'ruff check . --fix; ruff format .'
-run = 'fastapi dev desafio_germinare/app.py'
-pre_test = 'task lint'
-test = 'pytest -s -x --cov=desafio_germinare -vv'
-post_test = 'coverage html'
+- lint = 'ruff check .; ruff check . --diff'
+- format = 'ruff check . --fix; ruff format .'
+- run = 'fastapi dev desafio_germinare/app.py'
+- pre_test = 'task lint'
+- test = 'pytest -s -x --cov=desafio_germinare -vv'
+- post_test = 'coverage html'
 
 ### With Docker
 

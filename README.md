@@ -99,6 +99,12 @@ Insira suas chaves no arquivo **.env**:
 
 Há um arquivo .env.example pronto com os valores já inseridos para te auxiliar com isso
 
+## Observações
+
+- Além do endpoint que busca o flat_price, Fiz um CRUD para inserir os dados da tabela soybean_meal_prices no banco de dados para facilitar a avaliação.
+- Os testes não estão completamente cobertos, priorizei o endpoint solicitado no desafio, mas também adicionei alguns outros do CRUD caso queira avaliar outros pontos.
+- Recomendo rodar a aplicação com docker-compose, pois ao subi-lo poderá acessar a URL do Swagger diretamente
+
 ## Tudo que usei nesse projeto
 
 - [Python 3.12](https://www.python.org/) as the programming language.

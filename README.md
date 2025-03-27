@@ -106,6 +106,7 @@ Há um arquivo .env.example pronto com os valores já inseridos para te auxiliar
 - [FastAPI](https://fastapi.tiangolo.com/) as the framework
 - [SQLAlchemy](https://www.sqlalchemy.org/) for database management.
 - [Pydantic](https://pydantic-docs.helpmanual.io/) for validating and converting Data-Transfer-Objects and database models.
+- [Pytest](https://pytest.org/) for unit tests.
 - [Alembic](https://alembic.sqlalchemy.org/en/latest/) for database migrations.
 - [PostgreSQL](https://www.postgresql.org/) as the database.
 - [Docker](https://www.docker.com/) for containerization.

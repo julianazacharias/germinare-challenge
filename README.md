@@ -96,8 +96,6 @@ docker exec -it germinare_challenge poetry run alembic upgrade head
 Insira suas chaves no arquivo **.env**:
 
 - DATABASE_URL=""
-- CONVERSION_FACTOR=""
-- BASIS_THRESHOLD=""
 
 Há um arquivo .env.example pronto com os valores já inseridos para te auxiliar com isso
 

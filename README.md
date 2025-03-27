@@ -2,18 +2,18 @@
 
 A simple API built for Germinare Challenge
 
-## How to run the project
+## Como rodar o projeto
 
-### Test with Swagger
+### Teste com o Swagger
 
-- [Path to Swagger URL to test locally](http://localhost:8000/docs)
+- [URL para acessar o swagger ao testar localmente](http://localhost:8000/docs)
 
-### Requirements
+### Requisitos
 
 - [Python](https://www.python.org/) ^3.12
 - [Poetry](https://python-poetry.org/) 1.8.3
 
-### With poetry
+### Com poetry
 
 1. Install the dependencies:
 
@@ -39,16 +39,16 @@ task run
 task test
 ```
 
-5. All "task" commands:
+5. Todos os comandos do "task" (taskipy):
 
-- lint = 'ruff check .; ruff check . --diff'
-- format = 'ruff check . --fix; ruff format .'
-- run = 'fastapi dev desafio_germinare/app.py'
-- pre_test = 'task lint'
-- test = 'pytest -s -x --cov=desafio_germinare -vv'
-- post_test = 'coverage html'
+- task lint = 'ruff check .; ruff check . --diff'
+- task format = 'ruff check . --fix; ruff format .'
+- task run = 'fastapi dev desafio_germinare/app.py'
+- task pre_test = 'task lint'
+- task test = 'pytest -s -x --cov=desafio_germinare -vv'
+- task post_test = 'coverage html'
 
-### With Docker
+### Com docker
 
 1. Build the image:
 
@@ -62,15 +62,46 @@ docker-compose build
 docker-compose up
 ```
 
-### .ENV file:
+Ao rodar o docker compose, as migrations devem rodar automaticamente
 
-Insert your API KEY value on **.env** file:
+### Com docker localmente
+
+Caso não queira usar o docker compose, você pode testar com o Docker localmente:
+
+```bash
+docker run -d \
+    --name app_database \
+    -e POSTGRES_USER=app_user \
+    -e POSTGRES_DB=app_db \
+    -e POSTGRES_PASSWORD=app_password \
+    -v pgdata:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    postgres
+```
+
+Para aplicar as migrações:
+
+```bash
+alembic upgrade head
+```
+
+Para aplicar migrações em um ambiente com contêineres:
+
+```bash
+docker exec -it germinare_challenge poetry run alembic upgrade head
+```
+
+### O arquivo .ENV
+
+Insira suas chaves no arquivo **.env**:
 
 - DATABASE_URL=""
 - CONVERSION_FACTOR=""
 - BASIS_THRESHOLD=""
 
-## Everything used in this project
+Há um arquivo .env.example pronto com os valores já inseridos para te auxiliar com isso
+
+## Tudo que usei nesse projeto
 
 - [Python 3.12](https://www.python.org/) as the programming language.
 - [Poetry](https://python-poetry.org/) to manage dependencies.

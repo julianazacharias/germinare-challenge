@@ -5,7 +5,6 @@ from fastapi import APIRouter
 from desafio_germinare.schemas.message import Message
 from desafio_germinare.schemas.soybean_meal_price import (
     FlatPriceRequest,
-    FlatPriceResponseList,
     SoybeanMealPriceList,
     SoybeanMealPricePatch,
     SoybeanMealPriceRequest,
@@ -27,11 +26,10 @@ router = APIRouter(prefix='/api', tags=['apis'])
 @router.post(
     '/flat_price',
     status_code=HTTPStatus.CREATED,
-    response_model=FlatPriceResponseList,
 )
 def get_flat_prices(flat_price_request: FlatPriceRequest, session: Session):
     results = get_flat_prices_service(flat_price_request, session)
-    return FlatPriceResponseList(results=results)
+    return {'results': results}
 
 
 @router.post(

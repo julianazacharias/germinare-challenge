@@ -12,34 +12,6 @@ from desafio_germinare.database.database import get_session
 from desafio_germinare.database.models import SoybeanMealPrice, table_registry
 
 
-class SoybeanMealPriceFactory(factory.Factory):
-    class Meta:
-        model = SoybeanMealPrice
-
-    # Ajusta contract_month para gerar o formato 'MAY24', 'SEP24', etc.
-    contract_month = factory.Sequence(
-        lambda n: f'{
-            [
-                "JAN",
-                "FEB",
-                "MAR",
-                "APR",
-                "MAY",
-                "JUN",
-                "JUL",
-                "AUG",
-                "SEP",
-                "OCT",
-                "NOV",
-                "DEC",
-            ][n % 12]
-        }24'
-    )
-
-    # Ajusta price para ser um decimal (float)
-    price = factory.Sequence(lambda n: Decimal(f'{450:.2f}'))
-
-
 @pytest.fixture
 def client(session):
     def get_session_override():
@@ -81,3 +53,29 @@ def soybean_meal_price(session):
     session.refresh(soybean_meal_price)
 
     return soybean_meal_price
+
+
+class SoybeanMealPriceFactory(factory.Factory):
+    class Meta:
+        model = SoybeanMealPrice
+
+    contract_month = factory.Sequence(
+        lambda n: f'{
+            [
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC",
+            ][n % 12]
+        }24'
+    )
+
+    price = factory.Sequence(lambda n: Decimal(f'{n*100:.2f}'))

@@ -2,11 +2,9 @@ from decimal import Decimal
 
 from sqlalchemy import select
 
-from desafio_germinare.config.settings import Settings
 from desafio_germinare.database.models import SoybeanMealPrice
 from desafio_germinare.schemas.soybean_meal_price import (
     FlatPriceRequest,
-    FlatPriceResponse,
     SoybeanMealPricePatch,
     SoybeanMealPriceRequest,
 )
@@ -19,7 +17,8 @@ from desafio_germinare.utils.exceptions import (
 )
 from desafio_germinare.utils.sanitize import sanitize
 
-settings = Settings()
+CONVERSION_FACTOR = 1.10231
+BASIS_THRESHOLD = 50
 
 
 def get_flat_prices_service(
@@ -34,36 +33,32 @@ def get_flat_prices_service(
     flat_prices = []
 
     basis = Decimal(flat_price_request.basis)
-
-    conversion_factor = Decimal(settings.CONVERSION_FACTOR)
+    conversion_factor = Decimal(CONVERSION_FACTOR)
 
     for soybean_meal_price in soybean_meal_prices:
-        if (
-            basis > settings.BASIS_THRESHOLD
-            or basis < -settings.BASIS_THRESHOLD
-        ):
+        if basis > BASIS_THRESHOLD or basis < -BASIS_THRESHOLD:
             raise InvalidBasisException
 
         if not soybean_meal_price.contract_month:
             raise ContractMonthNotFoundException
 
-        # Flat Price = (Preço Futuro (CBOT) + Basis)*Fator de conversão
-
         cbot_price = Decimal(soybean_meal_price.price)
 
+        # Flat Price = (Preço Futuro (CBOT) + Basis)*Fator de conversão
         flat_price = (cbot_price + basis) * conversion_factor
 
         formatted_cbot_price = f'{float(cbot_price):.2f}'
         formatted_basis = f'{basis:.2f}'
 
         flat_prices.append(
-            FlatPriceResponse(
-                contract_month=soybean_meal_price.contract_month,
-                cbot_price=formatted_cbot_price,
-                basis=formatted_basis,
-                flat_price=round(float(flat_price), 2),
-            )
+            {
+                'contract_month': soybean_meal_price.contract_month,
+                'cbot_price': formatted_cbot_price,
+                'basis': formatted_basis,
+                'flat_price': round(float(flat_price), 2),
+            }
         )
+
     return flat_prices
 
 

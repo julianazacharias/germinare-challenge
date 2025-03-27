@@ -7,5 +7,3 @@ class Settings(BaseSettings):
     )
 
     DATABASE_URL: str
-    CONVERSION_FACTOR: float
-    BASIS_THRESHOLD: float

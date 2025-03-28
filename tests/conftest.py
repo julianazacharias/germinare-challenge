@@ -78,4 +78,4 @@ class SoybeanMealPriceFactory(factory.Factory):
         }24'
     )
 
-    price = factory.Sequence(lambda n: Decimal(f'{n*100:.2f}'))
+    price = factory.Sequence(lambda n: Decimal(f'{n * 100:.2f}'))

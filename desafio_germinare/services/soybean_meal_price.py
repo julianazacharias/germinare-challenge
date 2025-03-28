@@ -1,5 +1,7 @@
 from decimal import Decimal
+from http import HTTPStatus
 
+from fastapi import HTTPException
 from sqlalchemy import select
 
 from desafio_germinare.database.models import SoybeanMealPrice
@@ -24,42 +26,67 @@ BASIS_THRESHOLD = 50
 def get_flat_prices_service(
     flat_price_request: FlatPriceRequest, session: Session
 ):
-    query = select(SoybeanMealPrice).filter(
-        SoybeanMealPrice.contract_month.in_(flat_price_request.contract_months)
-    )
-
-    soybean_meal_prices = session.scalars(query).all()
-
-    flat_prices = []
-
     basis = Decimal(flat_price_request.basis)
-    conversion_factor = Decimal(CONVERSION_FACTOR)
 
-    for soybean_meal_price in soybean_meal_prices:
+    try:
+        if not flat_price_request.contract_months:
+            raise ContractMonthNotFoundException()
+
         if basis > BASIS_THRESHOLD or basis < -BASIS_THRESHOLD:
-            raise InvalidBasisException
+            raise InvalidBasisException()
 
-        if not soybean_meal_price.contract_month:
-            raise ContractMonthNotFoundException
-
-        cbot_price = Decimal(soybean_meal_price.price)
-
-        # Flat Price = (Preço Futuro (CBOT) + Basis)*Fator de conversão
-        flat_price = (cbot_price + basis) * conversion_factor
-
-        formatted_cbot_price = f'{float(cbot_price):.2f}'
-        formatted_basis = f'{basis:.2f}'
-
-        flat_prices.append(
-            {
-                'contract_month': soybean_meal_price.contract_month,
-                'cbot_price': formatted_cbot_price,
-                'basis': formatted_basis,
-                'flat_price': round(float(flat_price), 2),
-            }
+        query = select(SoybeanMealPrice).filter(
+            SoybeanMealPrice.contract_month.in_(
+                flat_price_request.contract_months
+            )
         )
 
-    return flat_prices
+        soybean_meal_prices = session.scalars(query).all()
+
+        if not soybean_meal_prices:
+            raise ContractMonthNotFoundException()
+
+        flat_prices = []
+
+        conversion_factor = Decimal(CONVERSION_FACTOR)
+
+        for soybean_meal_price in soybean_meal_prices:
+            if (
+                not soybean_meal_price.contract_month
+                or soybean_meal_price.contract_month.strip() == ''
+            ):
+                raise ContractMonthNotFoundException()
+
+            cbot_price = Decimal(soybean_meal_price.price)
+
+            # Flat Price = (Preço Futuro (CBOT) + Basis)*Fator de conversão
+            flat_price = (cbot_price + basis) * conversion_factor
+
+            formatted_cbot_price = f'{float(cbot_price):.2f}'
+            formatted_basis = f'{basis:.2f}'
+
+            flat_prices.append(
+                {
+                    'contract_month': soybean_meal_price.contract_month,
+                    'cbot_price': formatted_cbot_price,
+                    'basis': formatted_basis,
+                    'flat_price': round(float(flat_price), 2),
+                }
+            )
+
+        return flat_prices
+
+    except InvalidBasisException as e:
+        raise e
+
+    except ContractMonthNotFoundException as e:
+        raise e
+
+    except Exception:
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            detail='Unexpected server error',
+        )
 
 
 def create_soybean_meal_price_service(
@@ -76,7 +103,7 @@ def create_soybean_meal_price_service(
     )
 
     if existing_soybean_meal_price:
-        raise SoybeanMealAlreadyExistsException
+        raise SoybeanMealAlreadyExistsException()
 
     db_soybean_meal_price = SoybeanMealPrice(
         contract_month=sanitize(soybean_meal_price.contract_month),
@@ -108,7 +135,7 @@ def read_soybean_meal_price_service(
     )
 
     if not db_soybean_meal_price:
-        raise SoybeanMealNotFoundException
+        raise SoybeanMealNotFoundException()
 
     return db_soybean_meal_price
 
@@ -125,7 +152,7 @@ def patch_soybean_meal_price_service(
     )
 
     if not db_soybean_meal_price:
-        raise SoybeanMealNotFoundException
+        raise SoybeanMealNotFoundException()
 
     for key, value in soybean_meal_price.model_dump(
         exclude_unset=True
@@ -154,7 +181,7 @@ def delete_soybean_meal_price_service(
     )
 
     if not db_soybean_meal_price:
-        raise SoybeanMealNotFoundException
+        raise SoybeanMealNotFoundException()
 
     session.delete(db_soybean_meal_price)
     session.commit()

@@ -52,14 +52,6 @@ class InvalidContractMonthException(HTTPException):
         )
 
 
-class InsertABasisException(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail='Insert a valid basis value',
-        )
-
-
 class InternalServerError(HTTPException):
     def __init__(self):
         super().__init__(

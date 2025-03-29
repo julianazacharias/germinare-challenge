@@ -11,7 +11,6 @@ from desafio_germinare.schemas.soybean_meal_price import (
 from desafio_germinare.utils.dependencies import Session
 from desafio_germinare.utils.exceptions import (
     ContractMonthNotFoundException,
-    InsertABasisException,
     InternalServerError,
     InvalidBasisException,
     InvalidContractMonthException,
@@ -33,9 +32,6 @@ def get_flat_prices_service(
     try:
         for contract_month in flat_price_request.contract_months:
             validate_contract_month(contract_month)
-
-        if basis == 0:
-            raise InsertABasisException()
 
         if basis > BASIS_THRESHOLD or basis < -BASIS_THRESHOLD:
             raise InvalidBasisException()
@@ -76,9 +72,6 @@ def get_flat_prices_service(
         return flat_prices
 
     except InvalidContractMonthException as e:
-        raise e
-
-    except InsertABasisException as e:
         raise e
 
     except InvalidBasisException as e:

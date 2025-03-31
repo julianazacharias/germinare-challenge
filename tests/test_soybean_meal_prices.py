@@ -144,7 +144,9 @@ def test_get_flat_prices_with_non_existent_contract_month(client, session):
     assert data['detail'] == 'Contract month not found'
 
 
-def test_get_flat_prices_only_one_contract_month_correct_other_incorrect(client, session):
+def test_get_flat_prices_only_one_contract_month_correct_other_incorrect(
+    client, session
+):
     insert_data(session)
 
     flat_price_request = {

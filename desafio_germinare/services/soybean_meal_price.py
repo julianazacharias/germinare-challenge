@@ -30,6 +30,11 @@ def get_flat_prices_service(
     basis = Decimal(flat_price_request.basis)
 
     try:
+        flat_price_request.contract_months = [
+            sanitize(contract_month)
+            for contract_month in flat_price_request.contract_months
+        ]
+
         for contract_month in flat_price_request.contract_months:
             validate_contract_month(contract_month)
 
@@ -87,6 +92,9 @@ def get_flat_prices_service(
 def create_soybean_meal_price_service(
     soybean_meal_price: SoybeanMealPriceRequest, session: Session
 ):
+    sanitized_contract_month = sanitize(soybean_meal_price.contract_month)
+    validate_contract_month(sanitized_contract_month)
+
     existing_soybean_meal_price = (
         session.query(SoybeanMealPrice)
         .filter(
@@ -101,7 +109,7 @@ def create_soybean_meal_price_service(
         raise SoybeanMealAlreadyExistsException()
 
     db_soybean_meal_price = SoybeanMealPrice(
-        contract_month=sanitize(soybean_meal_price.contract_month),
+        contract_month=sanitized_contract_month,
         price=soybean_meal_price.price,
     )
 
@@ -157,6 +165,8 @@ def patch_soybean_meal_price_service(
             sanitized_value = sanitize(value)
 
         setattr(db_soybean_meal_price, key, sanitized_value)
+
+        validate_contract_month(db_soybean_meal_price.contract_month)
 
     session.add(db_soybean_meal_price)
     session.commit()
